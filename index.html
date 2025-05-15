@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BuildByAbhi Chat</title>
+  <title>MindMesh.ai Chat</title>
   <style>
   * {
     box-sizing: border-box;
@@ -136,14 +136,16 @@
 <body>
 
   <div class="mobile-screen" id="mobile-screen">
-    <div style="padding: 2rem; max-width: 400px; margin: auto; text-align: center;">
-      <h2>Welcome to MindMesh.ai</h2>
-      <p>Please enter your mobile number to continue:</p>
-      <input type="tel" id="mobile-input" placeholder="Enter mobile number" style="padding: 0.75rem; width: 100%; border: 1px solid #ccc; border-radius: 8px;" />
-      <br /><br />
-      <button onclick="startChat()" style="padding: 0.75rem 1.2rem; background: #007bff; border: none; color: white; border-radius: 8px; cursor: pointer;">Start Chat</button>
-    </div>
+  <div style="padding: 2rem; max-width: 400px; margin: auto; text-align: center;">
+    <h2>Welcome to MindMesh.ai</h2>
+    <p>Please enter your name and mobile number to continue:</p>
+    <input type="text" id="name-input" placeholder="Enter your name" style="padding: 0.75rem; width: 100%; border: 1px solid #ccc; border-radius: 8px;" />
+    <br /><br />
+    <input type="tel" id="mobile-input" placeholder="Enter mobile number" style="padding: 0.75rem; width: 100%; border: 1px solid #ccc; border-radius: 8px;" />
+    <br /><br />
+    <button onclick="startChat()" style="padding: 0.75rem 1.2rem; background: #ffc600; border: none; color: white; border-radius: 8px; cursor: pointer;">Start Chat</button>
   </div>
+</div>  
 
   <div class="chat-container" id="chat-container" style="display: none;">
     <div class="chat-header">
@@ -154,7 +156,6 @@
       <!-- Messages will appear here -->
     </div>
     <div class="input-box">
-      <input type="file" id="file-input" />
       <input type="text" id="user-input" placeholder="Type your message..." onkeypress="handleKey(event)" />
       <button onclick="sendMessage()">Send</button>
     </div>
@@ -170,58 +171,43 @@ if (!sessionId) {
 }
 
 let userMobile = "";
+let userName = "";
 
 function startChat() {
   const mobileInput = document.getElementById('mobile-input');
+  const nameInput = document.getElementById('name-input');
   const number = mobileInput.value.trim();
+  const name = nameInput.value.trim();
 
-  const valid = /^\d{10}$/.test(number);
-  if (!valid) {
+  const validMobile = /^\d{10}$/.test(number);
+  const validName = name.length >= 2;
+
+  if (!validName) {
+    alert("Please enter a valid name.");
+    return;
+  }
+
+  if (!validMobile) {
     alert("Please enter a valid 10-digit mobile number.");
     return;
   }
 
+  userName = name;
   userMobile = number;
+
   document.getElementById('mobile-screen').style.display = 'none';
   document.getElementById('chat-container').style.display = 'flex';
-}
-
-async function sendMessage() {
-  const input = document.getElementById('user-input');
-  const fileInput = document.getElementById('file-input');
-  const message = input.value.trim();
-
-  if (!message && !fileInput.files.length) return;
-
-  appendMessage(message || '[File Sent]', 'user-message');
-  input.value = '';
-
-  let fileData = null;
-
-  if (fileInput.files.length > 0) {
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-    reader.onload = async function (e) {
-      fileData = e.target.result;
-      await sendToWebhook(message, file.name, file.type, fileData);
-    };
-    reader.readAsDataURL(file);
-    fileInput.value = ''; // Clear file input
-  } else {
-    await sendToWebhook(message);
-  }
 }
 
 async function sendToWebhook(message, filename = null, filetype = null, filedata = null) {
   try {
     const payload = {
   sessionId,
+  name: userName,
   mobile: userMobile,
-  message,
-  file: filedata ? {
-    name: filename,
-    type: filetype,
-    data: filedata
+  message
+};
+
   } : null
 };
 
