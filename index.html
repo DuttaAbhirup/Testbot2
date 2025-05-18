@@ -108,6 +108,18 @@
       text-align: center;
     }
 
+    #typing-indicator::after {
+  content: ' .';
+  animation: dots 1.2s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0% { content: ' .'; }
+  33% { content: ' ..'; }
+  66% { content: ' ...'; }
+  100% { content: ' .'; }
+}
+
     @media screen and (max-width: 600px) {
       .chat-container {
         max-width: 100%;
@@ -121,7 +133,7 @@
 
 <div class="mobile-screen" id="mobile-screen">
   <div style="padding: 2rem; max-width: 400px;">
-    <h2>Welcome to MindMesh.ai v1.3</h2>
+    <h2>Welcome to MindMesh.ai v1.4</h2>
     <p>Please enter your name and mobile number to continue:</p>
     <input type="text" id="name-input" placeholder="Enter your name" style="padding: 0.75rem; width: 100%; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px;" />
     <input type="tel" id="mobile-input" placeholder="Enter mobile number" style="padding: 0.75rem; width: 100%; border: 1px solid #ccc; border-radius: 8px;" />
@@ -205,13 +217,44 @@
     }
   }
 
-  function appendMessage(text, className) {
+  function appendMessage(text, className, isAnimated = false) {
   const chatBox = document.getElementById('chat-box');
   const div = document.createElement('div');
   div.className = `message ${className}`;
-  div.innerHTML = text.replace(/\n/g, '<br>'); // 👈 key line
+
+  if (isAnimated) {
+    let i = 0;
+    const typeWriter = () => {
+      if (i < text.length) {
+        const char = text[i] === '\n' ? '<br>' : text[i];
+        div.innerHTML += char;
+        i++;
+        setTimeout(typeWriter, 20); // typing speed
+      }
+    };
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    typeWriter();
+  } else {
+    div.innerHTML = text.replace(/\n/g, '<br>');
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+}
+
+  function showTypingIndicator() {
+  const chatBox = document.getElementById('chat-box');
+  const div = document.createElement('div');
+  div.className = 'message bot-message';
+  div.id = 'typing-indicator';
+  div.innerHTML = 'Vira is typing...';
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+  function removeTypingIndicator() {
+  const typingDiv = document.getElementById('typing-indicator');
+  if (typingDiv) typingDiv.remove();
 }
 
   function handleKey(event) {
