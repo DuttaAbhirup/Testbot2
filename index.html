@@ -133,7 +133,7 @@
 
 <div class="mobile-screen" id="mobile-screen">
   <div style="padding: 2rem; max-width: 400px;">
-    <h2>Welcome to MindMesh.ai v1.5</h2>
+    <h2>Welcome to MindMesh.ai v1.6</h2>
     <p>Please enter your name and mobile number to continue:</p>
     <input type="text" id="name-input" placeholder="Enter your name" style="padding: 0.75rem; width: 100%; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px;" />
     <input type="tel" id="mobile-input" placeholder="Enter mobile number" style="padding: 0.75rem; width: 100%; border: 1px solid #ccc; border-radius: 8px;" />
@@ -199,24 +199,6 @@
   div.className = `message ${className}`;
   chatBox.appendChild(div);
 
-  if (animate) {
-    let i = 0;
-    function type() {
-      if (i < text.length) {
-        if (text[i] === '\n') {
-          div.innerHTML += '<br>';
-        } else {
-          div.innerHTML += text[i];
-        }
-        i++;
-        chatBox.scrollTop = chatBox.scrollHeight;
-        setTimeout(type, 20); // speed of typing
-      }
-    }
-    type();
-  } else {
-    div.innerHTML = text.replace(/\n/g, '<br>');
-  }
 
   chatBox.scrollTop = chatBox.scrollHeight;
 }
